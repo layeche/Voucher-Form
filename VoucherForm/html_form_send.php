@@ -1,5 +1,9 @@
 <?php
-require_once "vendor/autoload.php";
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+//Load Composer's autoloader
+require 'vendor/autoload.php';
 
 /***Connection DB*/
     $user = "root"; // issue tu rentres es param de ta base.
@@ -34,34 +38,33 @@ try {
 }
 
 /***Envoi mail*/
-$mail = new \PHPMailer\PHPMailer\PHPMailer();
+$mail = new PHPMailer(true);                              // Passing `true` enables exceptions
+try {
+    //Server settings
+    $mail->SMTPDebug = 2;                                 // Enable verbose debug output
+    $mail->isSMTP();                                      // Set mailer to use SMTP
+    $mail->Host = 'smtp1.example.com;smtp2.example.com';  // Specify main and backup SMTP servers
+    $mail->SMTPAuth = true;                               // Enable SMTP authentication
+    $mail->Username = 'user@example.com';                 // SMTP username
+    $mail->Password = 'secret';                           // SMTP password
+    $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+    $mail->Port = 587;                                    // TCP port to connect to
 
-//From email address and name
-$mail->From = "test@test.com";
-$mail->FromName = "ali";
+    //Recipients
+    $mail->setFrom('nadji-ali@hotmail.fr', 'Mailer');
+    $mail->addAddress($email);               // Name is optional
+    $mail->addReplyTo('info@example.com', 'Information');
+    $mail->addCC('cc@example.com');
+    $mail->addBCC('bcc@example.com');
 
-//To address and name
-$mail->addAddress("nadji-ali@hotmail.fr"); //Recipient name is optional
+    //Content
+    $mail->isHTML(true);                                  // Set email format to HTML
+    $mail->Subject = 'Here is the subject';
+    $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+    $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
-//Address to which recipient will reply
-$mail->addReplyTo("reply@yourdomain.com", "Reply");
-
-//CC and BCC
-$mail->addCC("cc@example.com");
-$mail->addBCC("bcc@example.com");
-
-//Send HTML or Plain Text email
-$mail->isHTML(true);
-
-$mail->Subject = "Subject Text";
-$mail->Body = "<i>voucher code is </i>$token";
-$mail->AltBody = "This is the plain text version of the email content";
-
-if(!$mail->send())
-{
-    echo "Mailer Error: " . $mail->ErrorInfo;
-}
-else
-{
-    echo "<script type= 'text/javascript'>alert('Check your mailBox');</script>";
+    $mail->send();
+    echo 'Message has been sent';
+} catch (Exception $e) {
+    echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
 }
