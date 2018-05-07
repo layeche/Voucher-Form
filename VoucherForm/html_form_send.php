@@ -70,8 +70,8 @@ try {
 }
 */
 /*essai dabord avec ça*/
-$to = "somebody@example.com, somebodyelse@example.com";
-$subject = "HTML email";
+$to = $email;
+$subject = "Your Voucher code";
 
 $message = "
 <html>
